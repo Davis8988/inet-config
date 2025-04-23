@@ -25,9 +25,9 @@ $functionsFile = Join-Path $thisScriptDir $(Join-Path "helpers" "functions.ps1")
 $classesFile   = Join-Path $thisScriptDir $(Join-Path "helpers" "classes.ps1")
 
 # Load functions and classes
-Write-Host "Loading functions from $functionsFile" -ForegroundColor Yellow
+Write-Host "Loading functions from $functionsFile" 
 . $functionsFile
-Write-Host "Loading classes from $classesFile" -ForegroundColor Yellow
+Write-Host "Loading classes from $classesFile" 
 . $classesFile
 
 # Get all network interfaces, including hidden ones
