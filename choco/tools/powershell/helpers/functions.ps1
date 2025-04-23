@@ -28,7 +28,6 @@ function getTargetInterface {
 
     # Add abort option
     $abortOption = $interfacesList.Count + 1
-    Write-Host ""
     Write-Host "  $abortOption) Abort script" -ForegroundColor Red
     Write-Host ""
 
