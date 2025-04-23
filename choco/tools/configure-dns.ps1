@@ -77,7 +77,7 @@ foreach ($i in 0..($interfacesList.Count - 1)) {
     Write-Host " - $($interfacesList[$i].ConnectionProfileName) - $($interfacesList[$i].Description)" -ForegroundColor Magenta
 
 }
-
+Write-Host ""
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
