@@ -71,7 +71,7 @@ foreach ($adapter in $netAdapters) {
 # Print the list of network interfaces
 foreach ($i in 0..($interfacesList.Count - 1)) {
     $nic = $interfacesList[$i]
-    Write-Host "[$i] $($nic.ToString())" -ForegroundColor Cyan
+    Write-Host "[$($i + 1)] $($nic.ToString())" -ForegroundColor Cyan
 }
 
 Write-Host ""
