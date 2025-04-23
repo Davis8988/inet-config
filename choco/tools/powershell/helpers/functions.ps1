@@ -122,12 +122,11 @@ function printDnsServersForInterface {
     Write-Host "Interface `"$InterfaceName`" Current configured DNS servers:" -ForegroundColor Yellow
 
     foreach ($dns in $dnsServers) {
+        Write-Host " * " -NoNewLine
         if ($HighlightDns -and $dns -eq $HighlightDns) {
-            Write-Host " * " -NoNewLine
             Write-Host $dns -ForegroundColor Cyan
-            # Write-Host "  <-- DNS Already Configured" -ForegroundColor Magenta
         } else {
-            Write-Host " * $dns"
+            Write-Host $dns
         }
     }
 }
