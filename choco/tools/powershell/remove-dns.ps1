@@ -3,8 +3,7 @@
 #
 # Description:
 #   This script removes a specified DNS server address from a selected network interface on a Windows machine.
-#   It allows the user to select the interface manually or automatically via parameters.
-#   The script validates the change after DNS removal.
+#   It lists interfaces, allows selection (manual or automatic), removes the DNS, and validates the change.
 ##############################
 
 param (
@@ -16,7 +15,7 @@ param (
     [switch]$AutoConfirm
 )
 
-$ErrorActionPreference = 'Stop'  # Stop on all errors
+$ErrorActionPreference = 'Stop' # stop on all errors
 
 $thisScriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $functionsFile = Join-Path $thisScriptDir $(Join-Path "helpers" "functions.ps1")
@@ -28,8 +27,8 @@ Write-Host "Loading functions from $functionsFile" -ForegroundColor Yellow
 Write-Host "Loading classes from $classesFile" -ForegroundColor Yellow
 . $classesFile
 
-# Gather network adapters
-Write-Host "Getting all network interfaces..."
+# Get all network interfaces, including hidden ones
+Write-Host "Getting all network interfaces.."
 if ($ShowHidden) {
     Write-Host "Including hidden interfaces" -ForegroundColor Yellow
 }
@@ -47,7 +46,6 @@ foreach ($adapter in $netAdapters) {
 }
 Write-Host "----------------------------------------" -ForegroundColor Yellow
 Write-Host ""
-Write-Host ""
 
 # Check if any interfaces were found
 if ($netAdapters.Count -eq 0) {
@@ -63,49 +61,30 @@ Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
-    $nameToAdd = if($netConProfile.Name) {
-        $netConProfile.Name
-    } else {
-        $netConProfile.InterfaceAlias
-    }
+    $nameToAdd = if ($netConProfile.Name) { $netConProfile.Name } else { $netConProfile.InterfaceAlias }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
     $interfacesList += $nicObj
 }
 
-# Print the list of network interfaces
-for ($i = 0; $i -lt $interfacesList.Count; $i++) {
-    $nic = $interfacesList[$i]
-    Write-Host "  $($i + 1)) " -NoNewLine
-    Write-Host "$($nic.Name)" -ForegroundColor Cyan -NoNewLine
-    Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
-}
-
-# Add abort option if more than one
-if ($interfacesList.Count -gt 1) {
-    $abortOption = $interfacesList.Count + 1
-    Write-Host "  $abortOption) " -NoNewLine
-    Write-Host "Abort script" -ForegroundColor Red
-}
-Write-Host ""
-
 # Select interface
 $interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
+Write-Host "Using network interface: $($interfaceToConfigure.Name)" -ForegroundColor Green
 
-# Check current DNS servers
-Write-Host ""
-Write-Host "Checking current DNS servers for: $($interfaceToConfigure.Name)" -ForegroundColor Yellow
-$currentDns = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -AddressFamily IPv4).ServerAddresses
+# Get current DNS config
+Write-Host "Checking current DNS servers for: $($interfaceToConfigure.Name)"
+$existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
 
-Write-Host "Current DNS servers:" -ForegroundColor Cyan
-$currentDns | ForEach-Object { Write-Host " * $_" }
-
-if (-not ($currentDns -contains $DnsAddr)) {
-    Write-Host "DNS address '$DnsAddr' not found. Nothing to remove." -ForegroundColor Green
+# Check if target DNS exists
+if (-not ($existingDnsServers -contains $DnsAddr)) {
+    Write-Host ""
+    Write-Host "DNS address '$DnsAddr' not found on interface. Nothing to remove." -ForegroundColor Green
     exit 0
 }
 
 # Confirm removal
 Write-Warning "DNS address '$DnsAddr' will be removed from interface '$($interfaceToConfigure.Name)'"
+Write-Host ""
 if (! $AutoConfirm) {
     CHOICE /C YN /M "Are you sure you want to remove it?"
     if ($LASTEXITCODE -eq 2) {
@@ -113,24 +92,28 @@ if (! $AutoConfirm) {
         exit 0
     }
 } else {
-    Write-Host "Auto-confirmation enabled. Proceeding..." -ForegroundColor Yellow
+    Write-Host "Auto-confirmation enabled. Proceeding with removal." -ForegroundColor Yellow
 }
 
-# Remove and apply
-$newDnsList = $currentDns | Where-Object { $_ -ne $DnsAddr }
-Write-Host "Updating DNS servers to: $($newDnsList -join ', ')" -ForegroundColor Yellow
-
+# Remove the DNS address
+$newDnsList = $existingDnsServers | Where-Object { $_ -ne $DnsAddr }
+Write-Host "Updating DNS server list to: $($newDnsList -join ', ')" -ForegroundColor Yellow
 Set-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -ServerAddresses $newDnsList
+
 if (! $?) {
     Write-Host "Error: Failed to update DNS servers." -ForegroundColor Red
     exit 1
 }
 
-# Validate removal
-$finalDns = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -AddressFamily IPv4).ServerAddresses
+# Validate result
+Write-Host "Validating updated DNS server list..." -ForegroundColor Yellow
+$finalDns = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $finalDns -HighlightDns $DnsAddr
+
 if ($finalDns -contains $DnsAddr) {
-    Write-Host "Error: DNS server '$DnsAddr' still present after update." -ForegroundColor Red
+    Write-Host "Error: DNS server '$DnsAddr' is still present after update." -ForegroundColor Red
     exit 1
 }
 
+Write-Host ""
 Write-Host "DNS server '$DnsAddr' successfully removed from interface '$($interfaceToConfigure.Name)'." -ForegroundColor Green
