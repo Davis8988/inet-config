@@ -77,7 +77,7 @@ for ($i = 0; $i -lt $interfacesList.Count; $i++) {
     Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
 }
 
-# Add abort option at the end
+# Add abort option if more than one
 if ($interfacesList.Count -gt 1) {
     $abortOption = $interfacesList.Count + 1
     Write-Host "  $abortOption) " -NoNewLine
@@ -85,79 +85,8 @@ if ($interfacesList.Count -gt 1) {
 }
 Write-Host ""
 
-# Check if there is more than one interface
-if ($interfacesList.Count -gt 1) {
-    if ($AutoConfirm -and ! $Interface) {
-        Write-Host "Auto-confirmation enabled but no interface specified. Cannot auto-select." -ForegroundColor Red
-        Write-Host "Please specify an interface using the -Interface parameter. (E.g -Interface=1)" -ForegroundColor Yellow
-        Write-Host "Aborting..." 
-        exit 1
-    }
-        
-    Write-Host "Multiple network interfaces found. Please choose one to configure:" -ForegroundColor Yellow
-    Write-Host ""
-
-    $validChoice = $false
-
-    if ($Interface) {
-        # First check if its an integer (index) 
-        if ($Interface -match '^\d+$') {
-            $index = [int]$Interface - 1
-            if ($index -ge 0 -and $index -lt $interfacesList.Count) {
-                $interfaceToConfigure = $interfacesList[$index]
-                Write-Host "Auto-selected interface by index: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            }
-        } else {
-            # Its a string - try to match by name
-            $matched = $interfacesList | Where-Object { $_.Name -like "${Interface}*" }
-            if ($matched.Count -eq 1) {
-                $interfaceToConfigure = $matched
-                Write-Host "Auto-selected interface by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            } elseif ($matched.Count -gt 1) {
-                Write-Host "Warning: Multiple matches found for param '$Interface', please choose manually." -ForegroundColor Yellow
-            }
-        }
-
-        if (! $validChoice) {
-            Write-Host "Could not find interface name or index by provided param: '$Interface'" -NoNewline
-            Write-Host "Please choose manually" -ForegroundColor Yellow
-            Write-Host ""
-        }
-    }
-
-    
-
-    while (-not $validChoice) {
-        $abortIndex = $interfacesList.Count + 1
-        $choice = Read-Host "Enter the number of the interface you want to configure ($abortIndex to abort)"
-    
-        if ($choice -match '^\d+$') {
-            $choiceInt = [int]$choice
-    
-            if ($choiceInt -eq $abortIndex) {
-                Write-Host "User aborted interface selection." -ForegroundColor Red
-                exit 0
-            }
-    
-            if ($choiceInt -ge 1 -and $choiceInt -le $interfacesList.Count) {
-                $index = $choiceInt - 1
-                $interfaceToConfigure = $interfacesList[$index]
-                Write-Host "You chose: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            } else {
-                Write-Host "Invalid choice. Please enter a number between 1 and $($interfacesList.Count), or $abortIndex to abort." -ForegroundColor Red
-            }
-        } else {
-            Write-Host "Invalid input. Please enter a numeric value." -ForegroundColor Red
-        }
-    }    
-} else {
-    # Continue with the single interface
-	Write-Host "OK - Only one network interface found. Using it.."
-    $interfaceToConfigure = $interfacesList[0]
-}
+# Select interface
+$interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
 
 Write-Host "Using network interface: $($interfaceToConfigure.Name)" -ForegroundColor Green
 

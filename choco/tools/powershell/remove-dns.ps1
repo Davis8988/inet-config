@@ -81,7 +81,8 @@ for ($i = 0; $i -lt $interfacesList.Count; $i++) {
 # Add abort option if more than one
 if ($interfacesList.Count -gt 1) {
     $abortOption = $interfacesList.Count + 1
-    Write-Host "  $abortOption) Abort script" -ForegroundColor Red
+    Write-Host "  $abortOption) " -NoNewLine
+    Write-Host "Abort script" -ForegroundColor Red
 }
 Write-Host ""
 
