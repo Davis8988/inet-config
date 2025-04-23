@@ -48,12 +48,12 @@ Write-Host "Attempting to find connection profiles for each adapter:" -Foregroun
 Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
-    $profile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
-    if (! $profile) {
+    $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
+    if (! $netConProfile) {
         Write-Warning "No connection profile found for interface $($adapter.Name)"
         continue
     }
-    $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $profile.Name)
+    $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $netConProfile.Name)
     $interfacesList += $nicObj
 }
 
