@@ -102,7 +102,7 @@ if ($interfacesList.Count -gt 1) {
             }
         } else {
             # Its a string - try to match by name
-            $matched = $interfacesList | Where-Object { $_.Name -like $Interface }
+            $matched = $interfacesList | Where-Object { $_.Name -like "${Interface}*" }
             if ($matched.Count -eq 1) {
                 $interfaceToConfigure = $matched
                 Write-Host "Auto-selected by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
