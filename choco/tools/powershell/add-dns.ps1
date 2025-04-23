@@ -9,65 +9,76 @@
 ##############################
 
 param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$DnsAddr,
 
     [string]$DnsSuffix,
     [string]$Interface,
-    [string]$ShowHidden,
+    [switch]$ShowHidden,
     [switch]$AutoConfirm
 )
 
+$ErrorActionPreference = 'Stop' # stop on all errors
+
+$thisScriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
+$functionsFile = Join-Path $thisScriptDir $(Join-Path "helpers" "functions.ps1")
+$classesFile   = Join-Path $thisScriptDir $(Join-Path "helpers" "classes.ps1")
+
+# Load functions and classes
+Write-Host "Loading functions from $functionsFile" 
+. $functionsFile
+Write-Host "Loading classes from $classesFile" 
+. $classesFile
 
 # Get all network interfaces, including hidden ones
 Write-Host "Getting all network interfaces.."
-Write-Host ""
 if ($ShowHidden) {
-    $interfacesList = Get-NetAdapter -IncludeHidden | Where-Object { $_.Status -eq 'Up' }
-} else {
-    $interfacesList = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+    Write-Host "Including hidden interfaces" -ForegroundColor Yellow
 }
-
-Write-Host "Found $($interfacesList.Count) network interfaces:" -ForegroundColor Yellow
 Write-Host ""
 
-if ($interfacesList.Count -gt 1) {
-    for ($i = 0; $i -lt $interfacesList.Count; $i++) {
-        $connectionProfile = Get-NetConnectionProfile -InterfaceAlias $interfacesList[$i].Name -ea 0
-        if (! $connectionProfile) {
-            Write-Warning "No connection profile found for interface $($interfacesList[$i].Name)"
-            continue
-        }
-        # Display the found interface name and description
-        Write-Host "${i}: NIC Name: " -NoNewLine; Write-Host "$($interfacesList[$i].Name)" -ForegroundColor Cyan -NoNewLine; Write-Host " ($($connectionProfile.Name) - $($interfacesList[$i].InterfaceDescription))" -ForegroundColor Magenta
-    }
+[array]$netAdapters = if ($ShowHidden) {
+    Get-NetAdapter -IncludeHidden | Where-Object { $_.Status -eq 'Up' }
+} else {
+    Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
 }
 
-# Check if there is more than one interface
-if ($interfacesList.Count -gt 1) {
-    Write-Host "Multiple network interfaces found. Please choose one to configure:" -ForegroundColor Yellow
-    
-	Write-Host ""
-    
-    $validChoice = $false
-    while (-not $validChoice) {
-		$choice = Read-Host "Enter the number of the interface you want to configure"
-		if ($choice -match '^\d+$' -and [int]$choice -ge 0 -and [int]$choice -lt $interfacesList.Count) {
-			$interfaceToConfigure = $interfacesList[$choice]
-			$validChoice = $true
-		} else {
-			Write-Host "Invalid choice. Please enter a valid number between 0 and $($interfacesList.Count - 1)." -ForegroundColor Red
-		}
-	}
-} else {
-    # Continue with the single interface
-	Write-Host "Only one network interface found"
-    $interfaceToConfigure = $interfacesList[0]
+Write-Host "Found $($netAdapters.Count) network adapters:" -ForegroundColor Yellow
+foreach ($adapter in $netAdapters) {
+    Write-Host " * $($adapter.Name) - $($adapter.InterfaceDescription)" -ForegroundColor Cyan
 }
+Write-Host "----------------------------------------" -ForegroundColor Yellow
+Write-Host ""
+Write-Host ""
+
+# Check if any interfaces were found
+if ($netAdapters.Count -eq 0) {
+    Write-Host "Error - No network adapters found." -ForegroundColor Red
+    if (! $ShowHidden) {
+        Write-Host "Try running with -ShowHidden to include hidden adapters." -ForegroundColor Yellow
+    }
+    exit 1
+}
+
+Write-Host "Attempting to find connection profiles for each adapter:"
+Write-Host ""
+$interfacesList = @()
+foreach ($adapter in $netAdapters) {
+    $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
+    $nameToAdd = if($netConProfile.Name) {
+        $netConProfile.Name
+    } else {
+        $netConProfile.InterfaceAlias
+    }
+    $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
+    $interfacesList += $nicObj
+}
+
+# Select interface
+$interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
 
 Write-Host "Using network interface: $($interfaceToConfigure.Name)" -ForegroundColor Green
 
-Write-Host ""
 Write-Host "Checking for DNS configuration of: $DnsAddr"
 Write-Host ""
 
@@ -76,18 +87,8 @@ $ipv4Config = Get-NetIPConfiguration -InterfaceAlias $interfaceToConfigure.Name
 Write-Host "Current IPv4 Configuration:" -ForegroundColor Yellow
 $ipv4Config | Format-List
 
-# Get existing DNS server addresses
-$existingDnsServers = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -AddressFamily IPv4).ServerAddresses
-
-# Print the current configured DNS servers
-Write-Host "Interface `"$($interfaceToConfigure.Name)`" Current configured DNS servers:" -ForegroundColor Yellow
-foreach ($dnsServer in $existingDnsServers) {
-    if ($dnsServer -eq $DnsAddr) {
-		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- Found" -ForegroundColor Magenta
-	} else {
-		Write-Host " * ${dnsServer}"
-	}
-}
+$existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
 
 # Check if the DNS server already exists
 if ($existingDnsServers -contains $DnsAddr) {
@@ -98,7 +99,7 @@ if ($existingDnsServers -contains $DnsAddr) {
     exit 0
 }
 
-Write-Warning "Missing DNS address '${dnsToAdd}'"
+Write-Warning "Missing DNS address '${DnsAddr}'"
 Write-Host ""
 Write-Host "Adding DNS server: $DnsAddr  to interface: $($interfaceToConfigure.Name)"
 Write-Host ""
@@ -120,7 +121,7 @@ Write-Host ""
 $newDnsServers = @("$DnsAddr") + $existingDnsServers
 
 # Update DNS server addresses
-Write-Host "Adding new DNS server address: ${dnsToAdd}..." -ForegroundColor Yellow
+Write-Host "Adding new DNS server address: ${DnsAddr}..." -ForegroundColor Yellow
 Set-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -ServerAddresses $newDnsServers
 if (! $?) {
     Write-Host "Error: Failed to add new DNS server address." -ForegroundColor Red
@@ -159,7 +160,7 @@ $suffixCheck   = ($currentDnsSuffix -eq $dnsSuffix)
 $registerCheck = $registerAddresses -eq $true
 
 if (-not $dnsCheck) {
-	Write-Host "Error: DNS server address is incorrect. Expected: ${dnsToAdd}, Found: $($dnsServers -join ', ')" -ForegroundColor Red
+	Write-Host "Error: DNS server address is incorrect. Expected: ${DnsAddr}, Found: $($dnsServers -join ', ')" -ForegroundColor Red
     exit
 }
 
@@ -175,4 +176,8 @@ if (-not $registerCheck) {
     exit
 }
 
+$existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
+
+Write-Host ""
 Write-Host "DNS configuration successfully updated and validated!" -ForegroundColor Green
