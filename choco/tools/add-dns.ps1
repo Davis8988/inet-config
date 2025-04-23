@@ -116,7 +116,14 @@ if ($interfacesList.Count -gt 1) {
                 Write-Host "Warning: Multiple matches found for param '$Interface', please choose manually." -ForegroundColor Yellow
             }
         }
+
+        if (! $validChoice) {
+            Write-Host "Could not find interface name or index by provided param: '$Interface'" 
+            Write-Host "Please choose manually:" -ForegroundColor Yellow
+        }
     }
+
+    
 
     while (-not $validChoice) {
         $abortIndex = $interfacesList.Count + 1
