@@ -64,7 +64,12 @@ foreach ($adapter in $netAdapters) {
     #     Write-Warning " * No connection profile found for interface $($adapter.Name) - Cannot configure it"
     #     continue
     # }
-    $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $netConProfile.Name)
+    $nameToAdd = if($netConProfile.Name) {
+        $netConProfile.Name
+    } else {
+        $netConProfile.InterfaceAlias
+    }
+    $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
     $interfacesList += $nicObj
 }
 
@@ -94,7 +99,7 @@ if ($interfacesList.Count -gt 1) {
             $interfaceToConfigure = $interfacesList[$choice]
 			$validChoice = $true
 		} else {
-			Write-Host "Invalid choice. Please enter a valid number between 0 and $($interfacesList.Count - 1)." -ForegroundColor Red
+			Write-Host "Invalid choice. Please enter a valid number between 1 and $($interfacesList.Count)." -ForegroundColor Red
 		}
 	}
 } else {
