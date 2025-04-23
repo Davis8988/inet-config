@@ -82,10 +82,12 @@ for ($i = 0; $i -lt $interfacesList.Count; $i++) {
 }
 
 # Add abort option at the end
-$abortOption = $interfacesList.Count + 1
-Write-Host "  $abortOption) " -NoNewLine
-Write-Host "Abort script" -ForegroundColor Red
-Write-Host ""
+if ($interfacesList.Count -gt 1) {
+    $abortOption = $interfacesList.Count + 1
+    Write-Host "  $abortOption) " -NoNewLine
+    Write-Host "Abort script" -ForegroundColor Red
+    Write-Host ""
+}
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
