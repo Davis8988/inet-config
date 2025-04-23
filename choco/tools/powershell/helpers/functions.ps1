@@ -21,14 +21,6 @@ function getTargetInterface {
         Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
     }
 
-    # Add abort option if more than one
-    if ($interfacesList.Count -gt 1) {
-        $abortOption = $interfacesList.Count + 1
-        Write-Host "  $abortOption) " -NoNewLine
-        Write-Host "Abort script" -ForegroundColor Red
-    }
-    Write-Host ""
-
     if ($interfacesList.Count -eq 1) {
         Write-Host "OK - Only one network interface found. Using it.." -ForegroundColor Green
         return $interfacesList[0]
