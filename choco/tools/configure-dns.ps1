@@ -50,7 +50,7 @@ $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
     if (! $netConProfile) {
-        Write-Warning "No connection profile found for interface $($adapter.Name)"
+        Write-Warning " * No connection profile found for interface $($adapter.Name)"
         continue
     }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $netConProfile.Name)
