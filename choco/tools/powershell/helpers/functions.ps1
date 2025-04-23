@@ -119,7 +119,7 @@ function printDnsServersForInterface {
     }
 
     Write-Host ""
-    Write-Host "Interface `"$InterfaceName`" Current configured DNS servers:" -ForegroundColor Yellow
+    Write-Host "Interface `"$InterfaceName`" Current configured DNS servers:"
 
     foreach ($dns in $dnsServers) {
         Write-Host " * " -NoNewLine
