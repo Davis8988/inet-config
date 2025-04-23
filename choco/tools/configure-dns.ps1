@@ -69,6 +69,11 @@ foreach ($i in 0..($interfacesList.Count - 1)) {
     Write-Host "[$i] $($nic.ToString())" -ForegroundColor Cyan
 }
 
+Write-Host ""
+Write-Host "Done"
+Write-Host ""
+Read-Host
+exit 0
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
