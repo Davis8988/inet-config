@@ -39,6 +39,15 @@ Write-Host ""
     Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
 }
 
+Write-Host "Found $($netAdapters.Count) network adapters:" -ForegroundColor Yellow
+foreach ($adapter in $netAdapters) {
+    Write-Host " * $($adapter.Name) - $($adapter.InterfaceDescription)" -ForegroundColor Cyan
+}
+Write-Host "----------------------------------------" -ForegroundColor Yellow
+Write-Host ""
+Write-Host ""
+
+# Check if any interfaces were found
 if ($netAdapters.Count -eq 0) {
     Write-Host "Error - No network adapters found." -ForegroundColor Red
     if (! $ShowHidden) {
@@ -47,7 +56,8 @@ if ($netAdapters.Count -eq 0) {
     exit 1
 }
 
-# Build interface objects
+Write-Host "Attempting to find connection profiles for each adapter:"
+Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue

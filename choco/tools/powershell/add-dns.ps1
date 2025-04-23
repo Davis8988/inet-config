@@ -60,10 +60,6 @@ Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
-    # if (! $netConProfile) {
-    #     Write-Warning " * No connection profile found for interface $($adapter.Name) - Cannot configure it"
-    #     continue
-    # }
     $nameToAdd = if($netConProfile.Name) {
         $netConProfile.Name
     } else {
