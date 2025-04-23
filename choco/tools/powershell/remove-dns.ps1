@@ -72,72 +72,7 @@ if ($interfacesList.Count -gt 1) {
 Write-Host ""
 
 # Select interface
-if ($interfacesList.Count -gt 1) {
-    if ($AutoConfirm -and ! $Interface) {
-        Write-Host "Auto-confirmation enabled but no interface specified. Cannot auto-select." -ForegroundColor Red
-        Write-Host "Please specify an interface using the -Interface parameter. (E.g -Interface=1)" -ForegroundColor Yellow
-        Write-Host "Aborting..." 
-        exit 1
-    }
-    Write-Host "Multiple network interfaces found. Please choose one to configure:" -ForegroundColor Yellow
-    Write-Host ""
-
-    $validChoice = $false
-
-    if ($Interface) {
-        if ($Interface -match '^\d+$') {
-            $index = [int]$Interface - 1
-            if ($index -ge 0 -and $index -lt $interfacesList.Count) {
-                $interfaceToConfigure = $interfacesList[$index]
-                Write-Host "Auto-selected interface by index: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            }
-        } else {
-            $matched = $interfacesList | Where-Object { $_.Name -like "${Interface}*" }
-            if ($matched.Count -eq 1) {
-                $interfaceToConfigure = $matched
-                Write-Host "Auto-selected interface by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            } elseif ($matched.Count -gt 1) {
-                Write-Host "Warning: Multiple matches found for '$Interface', please choose manually." -ForegroundColor Yellow
-            }
-        }
-
-        if (! $validChoice) {
-            Write-Host "Could not find interface name or index by provided param: '$Interface'" -NoNewline
-            Write-Host "Please choose manually" -ForegroundColor Yellow
-            Write-Host ""
-        }
-    }
-
-    while (-not $validChoice) {
-        $abortIndex = $interfacesList.Count + 1
-        $choice = Read-Host "Enter the number of the interface you want to configure ($abortIndex to abort)"
-
-        if ($choice -match '^\d+$') {
-            $choiceInt = [int]$choice
-
-            if ($choiceInt -eq $abortIndex) {
-                Write-Host "User aborted interface selection." -ForegroundColor Red
-                exit 0
-            }
-
-            if ($choiceInt -ge 1 -and $choiceInt -le $interfacesList.Count) {
-                $index = $choiceInt - 1
-                $interfaceToConfigure = $interfacesList[$index]
-                Write-Host "You chose: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-                $validChoice = $true
-            } else {
-                Write-Host "Invalid choice. Please enter a number between 1 and $($interfacesList.Count), or $abortIndex to abort." -ForegroundColor Red
-            }
-        } else {
-            Write-Host "Invalid input. Please enter a numeric value." -ForegroundColor Red
-        }
-    }
-} else {
-    Write-Host "OK - Only one network interface found. Using it.."
-    $interfaceToConfigure = $interfacesList[0]
-}
+$interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
 
 # Check current DNS servers
 Write-Host ""
