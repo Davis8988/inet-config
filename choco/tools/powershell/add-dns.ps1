@@ -87,7 +87,8 @@ $ipv4Config = Get-NetIPConfiguration -InterfaceAlias $interfaceToConfigure.Name
 Write-Host "Current IPv4 Configuration:" -ForegroundColor Yellow
 $ipv4Config | Format-List
 
-$existingDnsServers = printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -HighlightDns $DnsAddr
+$existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
 
 # Check if the DNS server already exists
 if ($existingDnsServers -contains $DnsAddr) {
