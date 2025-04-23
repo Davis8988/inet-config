@@ -74,14 +74,17 @@ foreach ($adapter in $netAdapters) {
 }
 
 # Print the list of network interfaces
-foreach ($i in 0..($interfacesList.Count - 1)) {
+for ($i = 0; $i -lt $interfacesList.Count; $i++) {
     $nic = $interfacesList[$i]
-    # Write-Host " - $($nic.ToString())" -ForegroundColor Cyan
     Write-Host "  $($i + 1)) " -NoNewLine
-    Write-Host "$($interfacesList[$i].Name)" -ForegroundColor Cyan -NoNewLine
-    Write-Host " - $($interfacesList[$i].ConnectionProfileName) - $($interfacesList[$i].Description)" -ForegroundColor Magenta
-
+    Write-Host "$($nic.Name)" -ForegroundColor Cyan -NoNewLine
+    Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
 }
+
+# Add abort option at the end
+$abortOption = $interfacesList.Count + 1
+Write-Host "  $abortOption) " -NoNewLine
+Write-Host "Abort script" -ForegroundColor Red
 Write-Host ""
 
 # Check if there is more than one interface
@@ -114,16 +117,29 @@ if ($interfacesList.Count -gt 1) {
     }
 
     while (-not $validChoice) {
-        $choice = Read-Host "Enter the number of the interface you want to configure"
-        if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -le $interfacesList.Count) {
-            $choice = [int]$choice - 1 # Adjust for zero-based index
-            $interfaceToConfigure = $interfacesList[$choice]
-            Write-Host "You chose: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
-            $validChoice = $true
+        $abortIndex = $interfacesList.Count + 1
+        $choice = Read-Host "Enter the number of the interface you want to configure ($abortIndex to abort)"
+    
+        if ($choice -match '^\d+$') {
+            $choiceInt = [int]$choice
+    
+            if ($choiceInt -eq $abortIndex) {
+                Write-Host "User aborted interface selection." -ForegroundColor Red
+                exit 0
+            }
+    
+            if ($choiceInt -ge 1 -and $choiceInt -le $interfacesList.Count) {
+                $index = $choiceInt - 1
+                $interfaceToConfigure = $interfacesList[$index]
+                Write-Host "You chose: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+                $validChoice = $true
+            } else {
+                Write-Host "Invalid choice. Please enter a number between 1 and $($interfacesList.Count), or $abortIndex to abort." -ForegroundColor Red
+            }
         } else {
-            Write-Host "Invalid choice. Please enter a valid number between 1 and $($interfacesList.Count)." -ForegroundColor Red
+            Write-Host "Invalid input. Please enter a numeric value." -ForegroundColor Red
         }
-    }
+    }    
 } else {
     # Continue with the single interface
 	Write-Host "OK - Only one network interface found. Using it.."
