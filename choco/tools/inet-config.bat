@@ -20,11 +20,42 @@ setlocal EnableDelayedExpansion
 ::   - All additional arguments will be passed to the target script.
 :: ############################################################
 
-:: Check if a script was provided
+:: Check if a script was provided or help requested
 if "%~1"=="" (
-    echo [ERROR] No script specified. Usage: inet-config.bat ^<add-dns^|remove-dns^> [args...]
-    exit /b 1
+    goto :showHelp
 )
+
+if /I "%~1"=="/?"   goto :showHelp
+if /I "%~1"=="-h"   goto :showHelp
+if /I "%~1"=="--help" goto :showHelp
+
+:: Proceed normally
+set "scriptName=%~1"
+shift
+goto :continue
+
+:showHelp
+echo.
+echo inet-config.bat - Entrypoint for DNS configuration scripts
+echo ----------------------------------------------------------
+echo Author: David Yair [E030331]
+echo.
+echo Usage:
+echo   inet-config.bat add-dns     [args...]
+echo   inet-config.bat remove-dns  [args...]
+echo.
+echo Description:
+echo   Executes the specified PowerShell script under powershell\ directory
+echo   and passes all arguments to it.
+echo.
+echo Supported commands:
+echo   add-dns.ps1       Adds a DNS server to an interface
+echo   remove-dns.ps1    Removes a DNS server from an interface
+echo.
+exit /b 0
+
+:continue
+
 
 :: Set and shift the script name
 set "scriptName=%~1"
