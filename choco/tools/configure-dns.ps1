@@ -105,7 +105,6 @@ if ($interfacesList.Count -gt 1) {
 
 Write-Host "Using network interface: $($interfaceToConfigure.Name)" -ForegroundColor Green
 
-Write-Host ""
 Write-Host "Checking for DNS configuration of: $DnsAddr"
 Write-Host ""
 
