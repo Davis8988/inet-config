@@ -89,7 +89,9 @@ if ($interfacesList.Count -gt 1) {
     while (-not $validChoice) {
 		$choice = Read-Host "Enter the number of the interface you want to configure"
 		if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -lt $($interfacesList.Count+1)) {
-			$interfaceToConfigure = $interfacesList[$choice]
+			$choice = [int]$choice - 1 # Adjust for zero-based index
+            Write-Host "You chose: $($interfacesList[$choice].Name) - $($interfacesList[$choice].ConnectionProfileName) - $($interfacesList[$choice].Description)" -ForegroundColor Green
+            $interfaceToConfigure = $interfacesList[$choice]
 			$validChoice = $true
 		} else {
 			Write-Host "Invalid choice. Please enter a valid number between 0 and $($interfacesList.Count - 1)." -ForegroundColor Red
