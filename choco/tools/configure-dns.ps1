@@ -88,7 +88,7 @@ if ($interfacesList.Count -gt 1) {
     $validChoice = $false
     while (-not $validChoice) {
 		$choice = Read-Host "Enter the number of the interface you want to configure"
-		if ($choice -match '^\d+$' -and [int]$choice -ge 0 -and [int]$choice -lt $interfacesList.Count) {
+		if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -lt $($interfacesList.Count+1)) {
 			$interfaceToConfigure = $interfacesList[$choice]
 			$validChoice = $true
 		} else {
