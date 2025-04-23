@@ -28,8 +28,8 @@ if "%~1"=="" (
 if /I "%~1"=="/?"   goto :showHelp
 if /I "%~1"=="-h"   goto :showHelp
 if /I "%~1"=="--help" goto :showHelp
-
 goto :continue
+
 
 :showHelp
 echo.
