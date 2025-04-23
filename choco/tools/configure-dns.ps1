@@ -57,14 +57,10 @@ foreach ($adapter in $netAdapters) {
     $interfacesList += $nicObj
 }
 
-for ($i = 0; $i -lt $interfacesList.Count; $i++) {
-    $connectionProfile = Get-NetConnectionProfile -InterfaceAlias $interfacesList[$i].Name -ea 0
-    if (! $connectionProfile) {
-        Write-Warning "No connection profile found for interface $($interfacesList[$i].Name)"
-        continue
-    }
-    # Display the found interface name and description
-    Write-Host "${i}: NIC Name: " -NoNewLine; Write-Host "$($interfacesList[$i].Name)" -ForegroundColor Cyan -NoNewLine; Write-Host " ($($connectionProfile.Name) - $($interfacesList[$i].InterfaceDescription))" -ForegroundColor Magenta
+# Print the list of network interfaces
+foreach ($i in 0..($interfacesList.Count - 1)) {
+    $nic = $interfacesList[$i]
+    Write-Host "[$i] $($nic.ToString())" -ForegroundColor Cyan
 }
 
 
