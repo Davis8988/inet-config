@@ -61,12 +61,16 @@ Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
-    $nameToAdd = if ($netConProfile.Name) { $netConProfile.Name } else { $netConProfile.InterfaceAlias }
+    $nameToAdd = if($netConProfile.Name) {
+        $netConProfile.Name
+    } else {
+        $netConProfile.InterfaceAlias
+    }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
     $interfacesList += $nicObj
 }
 
-# Print interface options
+# Print the list of network interfaces
 for ($i = 0; $i -lt $interfacesList.Count; $i++) {
     $nic = $interfacesList[$i]
     Write-Host "  $($i + 1)) " -NoNewLine
