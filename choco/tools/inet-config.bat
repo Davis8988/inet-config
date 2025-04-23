@@ -16,8 +16,8 @@ setlocal EnableDelayedExpansion
 ::   inet-config.bat remove-dns [parameters...]
 ::
 :: Notes:
-::   - The first argument must be the PowerShell script name.
-::   - All additional arguments will be forwarded as-is to the target script.
+::   - The first argument is the script name (without extension).
+::   - All additional arguments will be passed to the target script.
 :: ############################################################
 
 :: Check if a script was provided
@@ -26,20 +26,30 @@ if "%~1"=="" (
     exit /b 1
 )
 
-:: Set the script name
+:: Set and shift the script name
 set "scriptName=%~1"
 shift
 
+:: Rebuild the remaining arguments into args
+set "args="
+:collectArgs
+if "%~1"=="" goto endArgs
+set args=!args! "%~1"
+shift
+goto collectArgs
+:endArgs
+
 :: Verify script exists
-if not exist "%~dp0powershell\%scriptName%.ps1" (
-    echo [ERROR] Script "%scriptName%.ps1" not found at: "%~dp0powershell\%scriptName%.ps1"
+set "scriptPath=%~dp0powershell\%scriptName%.ps1"
+if not exist "!scriptPath!" (
+    echo [ERROR] Script "%scriptName%.ps1" not found at: "!scriptPath!"
     exit /b 1
 )
 
 :: Compose the PowerShell execution command
-set "psCommand=powershell.exe -ExecutionPolicy Bypass -NoProfile -File "%~dp0powershell\%scriptName%.ps1" %*"
+set "psCommand=powershell.exe -ExecutionPolicy Bypass -NoProfile -File "!scriptPath!" !args!"
 
-echo Running: %psCommand%
+echo Running: !psCommand!
 echo.
 
 :: Execute
