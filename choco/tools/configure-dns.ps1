@@ -40,17 +40,16 @@ if ($interfacesList.Count -eq 0) {
     exit 1
 }
 
-if ($interfacesList.Count -gt 1) {
-    for ($i = 0; $i -lt $interfacesList.Count; $i++) {
-        $connectionProfile = Get-NetConnectionProfile -InterfaceAlias $interfacesList[$i].Name -ea 0
-        if (! $connectionProfile) {
-            Write-Warning "No connection profile found for interface $($interfacesList[$i].Name)"
-            continue
-        }
-        # Display the found interface name and description
-        Write-Host "${i}: NIC Name: " -NoNewLine; Write-Host "$($interfacesList[$i].Name)" -ForegroundColor Cyan -NoNewLine; Write-Host " ($($connectionProfile.Name) - $($interfacesList[$i].InterfaceDescription))" -ForegroundColor Magenta
+for ($i = 0; $i -lt $interfacesList.Count; $i++) {
+    $connectionProfile = Get-NetConnectionProfile -InterfaceAlias $interfacesList[$i].Name -ea 0
+    if (! $connectionProfile) {
+        Write-Warning "No connection profile found for interface $($interfacesList[$i].Name)"
+        continue
     }
+    # Display the found interface name and description
+    Write-Host "${i}: NIC Name: " -NoNewLine; Write-Host "$($interfacesList[$i].Name)" -ForegroundColor Cyan -NoNewLine; Write-Host " ($($connectionProfile.Name) - $($interfacesList[$i].InterfaceDescription))" -ForegroundColor Magenta
 }
+
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
