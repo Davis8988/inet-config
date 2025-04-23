@@ -16,7 +16,7 @@ param (
     [switch]$AutoConfirm
 )
 
-$ErrorActionPreference = 'Stop'  # Fail on all errors
+$ErrorActionPreference = 'Stop'  # Stop on all errors
 
 $thisScriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $functionsFile = Join-Path $thisScriptDir $(Join-Path "helpers" "functions.ps1")
