@@ -130,6 +130,4 @@ function printDnsServersForInterface {
             Write-Host " * $dns"
         }
     }
-
-    return $dnsServers
 }
