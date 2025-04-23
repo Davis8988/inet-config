@@ -176,4 +176,7 @@ if (-not $registerCheck) {
     exit
 }
 
+$existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
+printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
+
 Write-Host "DNS configuration successfully updated and validated!" -ForegroundColor Green
