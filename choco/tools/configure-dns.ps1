@@ -97,7 +97,7 @@ if ($interfacesList.Count -gt 1) {
 	}
 } else {
     # Continue with the single interface
-	Write-Host "Only one network interface found"
+	Write-Host "OK - Only one network interface found. Using it.."
     $interfaceToConfigure = $interfacesList[0]
 }
 
