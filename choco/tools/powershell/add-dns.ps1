@@ -93,6 +93,8 @@ Write-Host ""
 if ($interfacesList.Count -gt 1) {
     if ($AutoConfirm -and ! $Interface) {
         Write-Host "Auto-confirmation enabled but no interface specified. Cannot auto-select." -ForegroundColor Red
+        Write-Host "Please specify an interface using the -Interface parameter." -ForegroundColor Yellow
+        Write-Host "Exiting script." -ForegroundColor Red
         exit 1
     }
         
