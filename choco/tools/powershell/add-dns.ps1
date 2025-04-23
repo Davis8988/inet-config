@@ -74,22 +74,6 @@ foreach ($adapter in $netAdapters) {
     $interfacesList += $nicObj
 }
 
-# Print the list of network interfaces
-for ($i = 0; $i -lt $interfacesList.Count; $i++) {
-    $nic = $interfacesList[$i]
-    Write-Host "  $($i + 1)) " -NoNewLine
-    Write-Host "$($nic.Name)" -ForegroundColor Cyan -NoNewLine
-    Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
-}
-
-# Add abort option if more than one
-if ($interfacesList.Count -gt 1) {
-    $abortOption = $interfacesList.Count + 1
-    Write-Host "  $abortOption) " -NoNewLine
-    Write-Host "Abort script" -ForegroundColor Red
-}
-Write-Host ""
-
 # Select interface
 $interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
 

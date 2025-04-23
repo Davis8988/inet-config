@@ -13,6 +13,22 @@ function getTargetInterface {
         exit 1
     }
 
+    # Print the list of network interfaces
+    for ($i = 0; $i -lt $interfacesList.Count; $i++) {
+        $nic = $interfacesList[$i]
+        Write-Host "  $($i + 1)) " -NoNewLine
+        Write-Host "$($nic.Name)" -ForegroundColor Cyan -NoNewLine
+        Write-Host " - $($nic.ConnectionProfileName) - $($nic.Description)" -ForegroundColor Magenta
+    }
+
+    # Add abort option if more than one
+    if ($interfacesList.Count -gt 1) {
+        $abortOption = $interfacesList.Count + 1
+        Write-Host "  $abortOption) " -NoNewLine
+        Write-Host "Abort script" -ForegroundColor Red
+    }
+    Write-Host ""
+
     if ($interfacesList.Count -eq 1) {
         Write-Host "OK - Only one network interface found. Using it.." -ForegroundColor Green
         return $interfacesList[0]
