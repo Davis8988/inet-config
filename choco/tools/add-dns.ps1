@@ -118,8 +118,9 @@ if ($interfacesList.Count -gt 1) {
         }
 
         if (! $validChoice) {
-            Write-Host "Could not find interface name or index by provided param: '$Interface'" 
-            Write-Host "Please choose manually:" -ForegroundColor Yellow
+            Write-Host "Could not find interface name or index by provided param: '$Interface'" -NoNewline
+            Write-Host "Please choose manually" -ForegroundColor Yellow
+            Write-Host ""
         }
     }
 
