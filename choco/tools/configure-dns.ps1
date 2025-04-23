@@ -125,7 +125,7 @@ $existingDnsServers = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToCo
 Write-Host "Interface `"$($interfaceToConfigure.Name)`" Current configured DNS servers:" -ForegroundColor Yellow
 foreach ($dnsServer in $existingDnsServers) {
     if ($dnsServer -eq $DnsAddr) {
-		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- Found" -ForegroundColor Magenta
+		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- Already Configured" -ForegroundColor Magenta
 	} else {
 		Write-Host " * ${dnsServer}"
 	}
@@ -140,7 +140,7 @@ if ($existingDnsServers -contains $DnsAddr) {
     exit 0
 }
 
-Write-Warning "Missing DNS address '${dnsToAdd}'"
+Write-Warning "Missing DNS address '${DnsAddr}'"
 Write-Host ""
 Write-Host "Adding DNS server: $DnsAddr  to interface: $($interfaceToConfigure.Name)"
 Write-Host ""
@@ -162,7 +162,7 @@ Write-Host ""
 $newDnsServers = @("$DnsAddr") + $existingDnsServers
 
 # Update DNS server addresses
-Write-Host "Adding new DNS server address: ${dnsToAdd}..." -ForegroundColor Yellow
+Write-Host "Adding new DNS server address: ${DnsAddr}..." -ForegroundColor Yellow
 Set-DnsClientServerAddress -InterfaceAlias $interfaceToConfigure.Name -ServerAddresses $newDnsServers
 if (! $?) {
     Write-Host "Error: Failed to add new DNS server address." -ForegroundColor Red
@@ -201,7 +201,7 @@ $suffixCheck   = ($currentDnsSuffix -eq $dnsSuffix)
 $registerCheck = $registerAddresses -eq $true
 
 if (-not $dnsCheck) {
-	Write-Host "Error: DNS server address is incorrect. Expected: ${dnsToAdd}, Found: $($dnsServers -join ', ')" -ForegroundColor Red
+	Write-Host "Error: DNS server address is incorrect. Expected: ${DnsAddr}, Found: $($dnsServers -join ', ')" -ForegroundColor Red
     exit
 }
 
