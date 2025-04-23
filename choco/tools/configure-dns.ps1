@@ -23,9 +23,9 @@ param (
 Write-Host "Getting all network interfaces.."
 Write-Host ""
 if ($ShowHidden) {
-    $interfacesList = Get-NetAdapter -IncludeHidden | Where-Object { $_.Status -eq 'Up' }
+    [array]$interfacesList = Get-NetAdapter -IncludeHidden | Where-Object { $_.Status -eq 'Up' }
 } else {
-    $interfacesList = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
+    [array]$interfacesList = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' }
 }
 
 Write-Host "Found $($interfacesList.Count) network interfaces:" -ForegroundColor Yellow
