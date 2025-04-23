@@ -31,6 +31,7 @@ if ($ShowHidden) {
 Write-Host "Found $($interfacesList.Count) network interfaces:" -ForegroundColor Yellow
 Write-Host ""
 
+# Check if any interfaces were found
 if ($interfacesList.Count -eq 0) {
     Write-Host "Error - No network interfaces found." -ForegroundColor Red
     if (! $ShowHidden) {
