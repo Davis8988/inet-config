@@ -21,6 +21,9 @@ param (
 
 # Get all network interfaces, including hidden ones
 Write-Host "Getting all network interfaces.."
+if ($ShowHidden) {
+    Write-Host "Including hidden interfaces" -ForegroundColor Yellow
+}
 Write-Host ""
 
 [array]$netAdapters = if ($ShowHidden) {
