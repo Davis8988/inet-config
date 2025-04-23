@@ -19,7 +19,7 @@ param (
 $ErrorActionPreference = 'Stop'  # Fail on all errors
 
 $thisScriptDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$classesFile   = Join-Path $thisScriptDir "classes.ps1"
+$classesFile   = Join-Path $thisScriptDir $(Join-Path "helpers" "classes.ps1")
 Write-Host "Loading classes from $classesFile" -ForegroundColor Yellow
 . $classesFile
 
