@@ -91,3 +91,31 @@ function getTargetInterface {
 
     return $interfaceToConfigure
 }
+
+
+function printDnsServersForInterface {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$InterfaceName,
+
+        [string]$HighlightDns
+    )
+
+    # Get existing DNS servers
+    $dnsServers = (Get-DnsClientServerAddress -InterfaceAlias $InterfaceName -AddressFamily IPv4).ServerAddresses
+
+    Write-Host ""
+    Write-Host "Interface `"$InterfaceName`" Current configured DNS servers:" -ForegroundColor Yellow
+
+    foreach ($dns in $dnsServers) {
+        if ($HighlightDns -and $dns -eq $HighlightDns) {
+            Write-Host " * " -NoNewLine
+            Write-Host $dns -NoNewLine -ForegroundColor Cyan
+            Write-Host "  <-- DNS Already Configured" -ForegroundColor Magenta
+        } else {
+            Write-Host " * $dns"
+        }
+    }
+
+    return $dnsServers
+}
