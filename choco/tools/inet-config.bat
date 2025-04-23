@@ -29,9 +29,6 @@ if /I "%~1"=="/?"   goto :showHelp
 if /I "%~1"=="-h"   goto :showHelp
 if /I "%~1"=="--help" goto :showHelp
 
-:: Proceed normally
-set "scriptName=%~1"
-shift
 goto :continue
 
 :showHelp
@@ -44,8 +41,8 @@ echo   add-dns       Adds a DNS server to an interface
 echo   remove-dns    Removes a DNS server from an interface
 echo.
 echo Usage:
-echo   inet-config.bat add-dns     [args...]
-echo   inet-config.bat remove-dns  [args...]
+echo   inet-config add-dns     [args...]
+echo   inet-config remove-dns  [args...]
 echo.
 exit /b 0
 
