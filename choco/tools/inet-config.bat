@@ -36,7 +36,7 @@ goto :continue
 
 :showHelp
 echo.
-echo inet-config.bat - Entrypoint for DNS configuration scripts
+echo inet-config - Entrypoint for DNS configuration scripts
 echo Author: David Yair [E030331]
 echo.
 echo Supported commands:
