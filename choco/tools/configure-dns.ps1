@@ -55,7 +55,7 @@ if ($netAdapters.Count -eq 0) {
     exit 1
 }
 
-Write-Host "Attempting to find connection profiles for each adapter:" -ForegroundColor Yellow
+Write-Host "Attempting to find connection profiles for each adapter:" -ForegroundColor Magenta
 Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
