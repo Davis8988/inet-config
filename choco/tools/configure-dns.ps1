@@ -39,6 +39,10 @@ Write-Host ""
 }
 
 Write-Host "Found $($netAdapters.Count) network adapters:" -ForegroundColor Yellow
+foreach ($adapter in $netAdapters) {
+    Write-Host " * $($adapter.Name) - $($adapter.InterfaceDescription)" -ForegroundColor Cyan
+}
+Write-Host "----------------------------------------" -ForegroundColor Yellow
 Write-Host ""
 
 # Check if any interfaces were found
