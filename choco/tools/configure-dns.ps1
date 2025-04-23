@@ -31,6 +31,14 @@ if ($ShowHidden) {
 Write-Host "Found $($interfacesList.Count) network interfaces:" -ForegroundColor Yellow
 Write-Host ""
 
+if ($interfacesList.Count -eq 0) {
+    Write-Host "Error - No network interfaces found." -ForegroundColor Red
+    if (! $ShowHidden) {
+        Write-Host "Try running with -ShowHidden to include hidden interfaces." -ForegroundColor Yellow
+    }
+    exit 1
+}
+
 if ($interfacesList.Count -gt 1) {
     for ($i = 0; $i -lt $interfacesList.Count; $i++) {
         $connectionProfile = Get-NetConnectionProfile -InterfaceAlias $interfacesList[$i].Name -ea 0
