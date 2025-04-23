@@ -87,21 +87,41 @@ Write-Host ""
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
     Write-Host "Multiple network interfaces found. Please choose one to configure:" -ForegroundColor Yellow
-    
-	Write-Host ""
-    
+    Write-Host ""
+
     $validChoice = $false
+
+    if ($Interface) {
+        if ($Interface -match '^\d+$') {
+            $index = [int]$Interface - 1
+            if ($index -ge 0 -and $index -lt $interfacesList.Count) {
+                $interfaceToConfigure = $interfacesList[$index]
+                Write-Host "Auto-selected by index: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+                $validChoice = $true
+            }
+        } else {
+            $matched = $interfacesList | Where-Object { $_.Name -like $Interface }
+            if ($matched.Count -eq 1) {
+                $interfaceToConfigure = $matched
+                Write-Host "Auto-selected by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+                $validChoice = $true
+            } elseif ($matched.Count -gt 1) {
+                Write-Host "Warning: Multiple matches found for '$Interface', please choose manually." -ForegroundColor Yellow
+            }
+        }
+    }
+
     while (-not $validChoice) {
-		$choice = Read-Host "Enter the number of the interface you want to configure"
-		if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -lt $($interfacesList.Count+1)) {
-			$choice = [int]$choice - 1 # Adjust for zero-based index
-            Write-Host "You chose: $($interfacesList[$choice].Name) - $($interfacesList[$choice].ConnectionProfileName) - $($interfacesList[$choice].Description)" -ForegroundColor Green
+        $choice = Read-Host "Enter the number of the interface you want to configure"
+        if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -le $interfacesList.Count) {
+            $choice = [int]$choice - 1 # Adjust for zero-based index
             $interfaceToConfigure = $interfacesList[$choice]
-			$validChoice = $true
-		} else {
-			Write-Host "Invalid choice. Please enter a valid number between 1 and $($interfacesList.Count)." -ForegroundColor Red
-		}
-	}
+            Write-Host "You chose: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+            $validChoice = $true
+        } else {
+            Write-Host "Invalid choice. Please enter a valid number between 1 and $($interfacesList.Count)." -ForegroundColor Red
+        }
+    }
 } else {
     # Continue with the single interface
 	Write-Host "OK - Only one network interface found. Using it.."
