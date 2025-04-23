@@ -18,6 +18,12 @@ param (
     [switch]$AutoConfirm
 )
 
+$ErrorActionPreference = 'Stop' # stop on all errors
+
+$thisScriptDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
+$classesFile = Join-Path $thisScriptDir "classes.ps1"
+Write-Host "Loading classes from $classesFile" -ForegroundColor Yellow
+. $classesFile
 
 # Get all network interfaces, including hidden ones
 Write-Host "Getting all network interfaces.."
