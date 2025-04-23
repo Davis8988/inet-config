@@ -86,8 +86,8 @@ if ($interfacesList.Count -gt 1) {
     $abortOption = $interfacesList.Count + 1
     Write-Host "  $abortOption) " -NoNewLine
     Write-Host "Abort script" -ForegroundColor Red
-    Write-Host ""
 }
+Write-Host ""
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
@@ -165,7 +165,7 @@ $existingDnsServers = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToCo
 Write-Host "Interface `"$($interfaceToConfigure.Name)`" Current configured DNS servers:" -ForegroundColor Yellow
 foreach ($dnsServer in $existingDnsServers) {
     if ($dnsServer -eq $DnsAddr) {
-		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- Already Configured" -ForegroundColor Magenta
+		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- DNS Already Configured" -ForegroundColor Magenta
 	} else {
 		Write-Host " * ${dnsServer}"
 	}
