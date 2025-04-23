@@ -108,7 +108,7 @@ if ($interfacesList.Count -gt 1) {
                 Write-Host "Auto-selected by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
                 $validChoice = $true
             } elseif ($matched.Count -gt 1) {
-                Write-Host "Warning: Multiple matches found for '$Interface', please choose manually." -ForegroundColor Yellow
+                Write-Host "Warning: Multiple matches found for param '$Interface', please choose manually." -ForegroundColor Yellow
             }
         }
     }
