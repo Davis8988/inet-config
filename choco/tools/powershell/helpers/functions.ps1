@@ -125,7 +125,7 @@ function printDnsServersForInterface {
         if ($HighlightDns -and $dns -eq $HighlightDns) {
             Write-Host " * " -NoNewLine
             Write-Host $dns -NoNewLine -ForegroundColor Cyan
-            Write-Host "  <-- DNS Already Configured" -ForegroundColor Magenta
+            # Write-Host "  <-- DNS Already Configured" -ForegroundColor Magenta
         } else {
             Write-Host " * $dns"
         }
