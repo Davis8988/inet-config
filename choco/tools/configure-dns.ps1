@@ -71,14 +71,9 @@ foreach ($adapter in $netAdapters) {
 # Print the list of network interfaces
 foreach ($i in 0..($interfacesList.Count - 1)) {
     $nic = $interfacesList[$i]
-    Write-Host "[$($i + 1)] $($nic.ToString())" -ForegroundColor Cyan
+    Write-Host " - $($nic.ToString())" -ForegroundColor Cyan
 }
 
-Write-Host ""
-Write-Host "Done"
-Write-Host ""
-Read-Host
-exit 0
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
