@@ -31,13 +31,13 @@ set "scriptName=%~1"
 shift
 
 :: Verify script exists
-if not exist "%~dp0%scriptName%" (
+if not exist "%~dp0powershell%scriptName%" (
     echo [ERROR] Script "%scriptName%" not found in directory: %~dp0
     exit /b 1
 )
 
 :: Compose the PowerShell execution command
-set "psCommand=powershell.exe -ExecutionPolicy Bypass -NoProfile -File "%~dp0%scriptName%" %*"
+set "psCommand=powershell.exe -ExecutionPolicy Bypass -NoProfile -File "%~dp0powershell%scriptName%" %*"
 
 echo Running: %psCommand%
 echo.
