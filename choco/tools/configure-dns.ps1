@@ -92,6 +92,7 @@ if ($interfacesList.Count -gt 1) {
     $validChoice = $false
 
     if ($Interface) {
+        # First check if its an integer (index) 
         if ($Interface -match '^\d+$') {
             $index = [int]$Interface - 1
             if ($index -ge 0 -and $index -lt $interfacesList.Count) {
@@ -100,6 +101,7 @@ if ($interfacesList.Count -gt 1) {
                 $validChoice = $true
             }
         } else {
+            # Its a string - try to match by name
             $matched = $interfacesList | Where-Object { $_.Name -like $Interface }
             if ($matched.Count -eq 1) {
                 $interfaceToConfigure = $matched
