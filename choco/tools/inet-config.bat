@@ -49,8 +49,8 @@ echo   Executes the specified PowerShell script under powershell\ directory
 echo   and passes all arguments to it.
 echo.
 echo Supported commands:
-echo   add-dns.ps1       Adds a DNS server to an interface
-echo   remove-dns.ps1    Removes a DNS server from an interface
+echo   add-dns       Adds a DNS server to an interface
+echo   remove-dns    Removes a DNS server from an interface
 echo.
 exit /b 0
 
