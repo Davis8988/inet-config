@@ -14,7 +14,7 @@ param (
 
     [string]$DnsSuffix,
     [string]$Interface,
-    [string]$ShowHidden,
+    [switch]$ShowHidden,
     [switch]$AutoConfirm
 )
 
@@ -44,6 +44,7 @@ foreach ($adapter in $netAdapters) {
 }
 Write-Host "----------------------------------------" -ForegroundColor Yellow
 Write-Host ""
+Write-Host ""
 
 # Check if any interfaces were found
 if ($netAdapters.Count -eq 0) {
@@ -60,7 +61,7 @@ $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
     if (! $netConProfile) {
-        Write-Warning " * No connection profile found for interface $($adapter.Name)"
+        Write-Warning " * No connection profile found for interface $($adapter.Name) - Cannot configure it"
         continue
     }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $netConProfile.Name)
