@@ -97,7 +97,7 @@ if ($interfacesList.Count -gt 1) {
             $index = [int]$Interface - 1
             if ($index -ge 0 -and $index -lt $interfacesList.Count) {
                 $interfaceToConfigure = $interfacesList[$index]
-                Write-Host "Auto-selected by index: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+                Write-Host "Auto-selected interface by index: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
                 $validChoice = $true
             }
         } else {
@@ -105,7 +105,7 @@ if ($interfacesList.Count -gt 1) {
             $matched = $interfacesList | Where-Object { $_.Name -like "${Interface}*" }
             if ($matched.Count -eq 1) {
                 $interfaceToConfigure = $matched
-                Write-Host "Auto-selected by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
+                Write-Host "Auto-selected interface by name match: $($interfaceToConfigure.Name) - $($interfaceToConfigure.ConnectionProfileName) - $($interfaceToConfigure.Description)" -ForegroundColor Green
                 $validChoice = $true
             } elseif ($matched.Count -gt 1) {
                 Write-Host "Warning: Multiple matches found for param '$Interface', please choose manually." -ForegroundColor Yellow
