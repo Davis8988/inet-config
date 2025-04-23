@@ -10,7 +10,7 @@
 
 param (
     [Parameter(Mandatory=$true)]
-    [string]$DnsToAdd,
+    [string]$DnsAddr,
 
     [string]$DnsSuffix,
     [string]$Interface,
@@ -68,7 +68,7 @@ if ($interfacesList.Count -gt 1) {
 Write-Host "Using network interface: $($interfaceToConfigure.Name)" -ForegroundColor Green
 
 Write-Host ""
-Write-Host "Checking for DNS configuration of: $dnsToAdd"
+Write-Host "Checking for DNS configuration of: $DnsAddr"
 Write-Host ""
 
 # Get the current IPv4 configuration ($interfaceToConfigure is the interface to add DNS addr to)
@@ -82,7 +82,7 @@ $existingDnsServers = (Get-DnsClientServerAddress -InterfaceAlias $interfaceToCo
 # Print the current configured DNS servers
 Write-Host "Interface `"$($interfaceToConfigure.Name)`" Current configured DNS servers:" -ForegroundColor Yellow
 foreach ($dnsServer in $existingDnsServers) {
-    if ($dnsServer -eq $dnsToAdd) {
+    if ($dnsServer -eq $DnsAddr) {
 		Write-Host " * " -NoNewLine ; Write-Host $dnsServer -NoNewLine -ForegroundColor Cyan ; Write-Host "  <-- Found" -ForegroundColor Magenta
 	} else {
 		Write-Host " * ${dnsServer}"
@@ -90,9 +90,9 @@ foreach ($dnsServer in $existingDnsServers) {
 }
 
 # Check if the DNS server already exists
-if ($existingDnsServers -contains $dnsToAdd) {
+if ($existingDnsServers -contains $DnsAddr) {
     Write-Host ""
-    Write-Host "Found dns: '$dnsToAdd' already configured" -ForegroundColor Green
+    Write-Host "Found dns: '$DnsAddr' already configured" -ForegroundColor Green
     Write-Host "OK"
     Write-Host ""
     exit 0
@@ -100,7 +100,7 @@ if ($existingDnsServers -contains $dnsToAdd) {
 
 Write-Warning "Missing DNS address '${dnsToAdd}'"
 Write-Host ""
-Write-Host "Adding DNS server: $dnsToAdd  to interface: $($interfaceToConfigure.Name)"
+Write-Host "Adding DNS server: $DnsAddr  to interface: $($interfaceToConfigure.Name)"
 Write-Host ""
 
 if (! $AutoConfirm) {
@@ -117,7 +117,7 @@ Write-Host "OK - continuing.."
 Write-Host ""
 
 # Add the new DNS server address to the beginning of the list
-$newDnsServers = @("$dnsToAdd") + $existingDnsServers
+$newDnsServers = @("$DnsAddr") + $existingDnsServers
 
 # Update DNS server addresses
 Write-Host "Adding new DNS server address: ${dnsToAdd}..." -ForegroundColor Yellow
@@ -154,7 +154,7 @@ $currentDnsSuffix  = $updatedConfig.ConnectionSpecificSuffix
 $registerAddresses = $updatedConfig.RegisterThisConnectionsAddress
 
 # Check if settings match expected values
-$dnsCheck      = ($currentDnsServers -contains $dnsToAdd)
+$dnsCheck      = ($currentDnsServers -contains $DnsAddr)
 $suffixCheck   = ($currentDnsSuffix -eq $dnsSuffix)
 $registerCheck = $registerAddresses -eq $true
 
