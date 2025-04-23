@@ -36,8 +36,8 @@ goto :continue
 
 :showHelp
 echo.
-echo Author: David Yair [E030331]
 echo inet-config.bat - Entrypoint for DNS configuration scripts
+echo Author: David Yair [E030331]
 echo.
 echo Supported commands:
 echo   add-dns       Adds a DNS server to an interface
