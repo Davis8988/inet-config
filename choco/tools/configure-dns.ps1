@@ -55,15 +55,15 @@ if ($netAdapters.Count -eq 0) {
     exit 1
 }
 
-Write-Host "Attempting to find connection profiles for each adapter:" -ForegroundColor Magenta
+Write-Host "Attempting to find connection profiles for each adapter:"
 Write-Host ""
 $interfacesList = @()
 foreach ($adapter in $netAdapters) {
     $netConProfile = Get-NetConnectionProfile -InterfaceAlias $adapter.Name -ErrorAction SilentlyContinue
-    if (! $netConProfile) {
-        Write-Warning " * No connection profile found for interface $($adapter.Name) - Cannot configure it"
-        continue
-    }
+    # if (! $netConProfile) {
+    #     Write-Warning " * No connection profile found for interface $($adapter.Name) - Cannot configure it"
+    #     continue
+    # }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $netConProfile.Name)
     $interfacesList += $nicObj
 }
