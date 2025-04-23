@@ -36,21 +36,16 @@ goto :continue
 
 :showHelp
 echo.
-echo inet-config.bat - Entrypoint for DNS configuration scripts
-echo ----------------------------------------------------------
 echo Author: David Yair [E030331]
-echo.
-echo Usage:
-echo   inet-config.bat add-dns     [args...]
-echo   inet-config.bat remove-dns  [args...]
-echo.
-echo Description:
-echo   Executes the specified PowerShell script under powershell\ directory
-echo   and passes all arguments to it.
+echo inet-config.bat - Entrypoint for DNS configuration scripts
 echo.
 echo Supported commands:
 echo   add-dns       Adds a DNS server to an interface
 echo   remove-dns    Removes a DNS server from an interface
+echo.
+echo Usage:
+echo   inet-config.bat add-dns     [args...]
+echo   inet-config.bat remove-dns  [args...]
 echo.
 exit /b 0
 
