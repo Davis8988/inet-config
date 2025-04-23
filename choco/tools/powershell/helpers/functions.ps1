@@ -124,7 +124,7 @@ function printDnsServersForInterface {
     foreach ($dns in $dnsServers) {
         Write-Host " * " -NoNewLine
         if ($HighlightDns -and $dns -eq $HighlightDns) {
-            Write-Host $dns -ForegroundColor Cyan
+            Write-Host $dns -ForegroundColor Magenta
         } else {
             Write-Host $dns
         }
