@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>inet-config</id>
+    <version>1.0.0</version>
+    <title>inet-config (Install)</title>
+    <authors>David Yair [E030331]</authors>
+    <owners>David Yair [E030331]</owners>
+    <projectUrl>http://gitlab.esl.corp.elbit.co.il/devops_simulators/chocolatey.git</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>inet-config network configuration</tags>
+    <summary>inet-config is a tool for configuring network settings, including DNS servers and more.</summary>
+    <description>inet-config is a versatile tool designed to configure various network settings on your system. Initially focused on DNS server configuration, future updates will include additional network interface settings.</description>
+    <!-- <releaseNotes>Initial release of inet-config.</releaseNotes> -->
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
