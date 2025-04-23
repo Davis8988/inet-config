@@ -91,6 +91,11 @@ Write-Host ""
 
 # Check if there is more than one interface
 if ($interfacesList.Count -gt 1) {
+    if ($AutoConfirm -and ! $Interface) {
+        Write-Host "Auto-confirmation enabled but no interface specified. Cannot auto-select." -ForegroundColor Red
+        exit 1
+    }
+        
     Write-Host "Multiple network interfaces found. Please choose one to configure:" -ForegroundColor Yellow
     Write-Host ""
 
