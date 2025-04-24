@@ -72,7 +72,13 @@ foreach ($adapter in $netAdapters) {
     }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
     $interfacesList += $nicObj
+
+    # Print the IPv4 configuration for each interface before selection
+    printIPv4ConfigForInterface -InterfaceName $adapter.Name
+    Write-Host ""
 }
+
+Write-Host ""
 
 # Select interface
 $interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm
@@ -83,10 +89,10 @@ Write-Host "Checking for DNS configuration of: $DnsAddr"
 Write-Host ""
 
 # Get the current IPv4 configuration ($interfaceToConfigure is the interface to add DNS addr to)
-$ipv4Config = Get-NetIPConfiguration -InterfaceAlias $interfaceToConfigure.Name
-Write-Host "Current IPv4 Configuration:" -ForegroundColor Yellow
-$ipv4Config | Format-List
+printIPv4ConfigForInterface -InterfaceName $interfaceToConfigure.Name
 
+
+Write-Host ""
 $existingDnsServers = getDnsServersForInterface -InterfaceName $interfaceToConfigure.Name
 printDnsServersForInterface -InterfaceName $interfaceToConfigure.Name -DnsServers $existingDnsServers -HighlightDns $DnsAddr
 

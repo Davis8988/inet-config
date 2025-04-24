@@ -64,7 +64,13 @@ foreach ($adapter in $netAdapters) {
     $nameToAdd = if ($netConProfile.Name) { $netConProfile.Name } else { $netConProfile.InterfaceAlias }
     $nicObj = [NetworkInterface]::new($adapter.Name, $adapter.InterfaceDescription, $nameToAdd)
     $interfacesList += $nicObj
+
+    # Print the IPv4 configuration for each interface before selection
+    printIPv4ConfigForInterface -InterfaceName $adapter.Name
+    Write-Host ""
 }
+
+Write-Host ""
 
 # Select interface
 $interfaceToConfigure = getTargetInterface -interfacesList $interfacesList -Interface $Interface -AutoConfirm:$AutoConfirm

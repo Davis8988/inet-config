@@ -130,3 +130,31 @@ function printDnsServersForInterface {
         }
     }
 }
+
+function getIPv4ConfigForInterface {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$InterfaceName
+    )
+
+    return Get-NetIPConfiguration -InterfaceAlias $InterfaceName
+}
+
+function printIPv4ConfigForInterface {
+    param (
+        [string]$InterfaceName
+    )
+
+    $config = getIPv4ConfigForInterface -InterfaceName $InterfaceName
+    $profile = Get-NetConnectionProfile -InterfaceAlias $InterfaceName -ErrorAction SilentlyContinue
+
+    Write-Host "Interface '${InterfaceName}':" -ForegroundColor Yellow
+    Write-Host "  InterfaceAlias       : $($config.InterfaceAlias)"
+    # Write-Host "  InterfaceIndex       : $($config.InterfaceIndex)"
+    Write-Host "  InterfaceDescription : $($config.InterfaceDescription)"
+    Write-Host "  NetProfile.Name      : $($profile.Name)"
+    Write-Host "  IPv4 Address         : $($config.IPv4Address.IPAddress)"
+    Write-Host "  Default Gateway      : $($config.IPv4DefaultGateway.NextHop)"
+    Write-Host "  DNS Servers          : $($config.DNSServer.ServerAddresses -join ',  ')"
+}
+
