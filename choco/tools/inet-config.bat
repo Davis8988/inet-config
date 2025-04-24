@@ -20,6 +20,9 @@ setlocal EnableDelayedExpansion
 ::   - All additional arguments will be passed to the target script.
 :: ############################################################
 
+
+set "scriptsDir=%~dp0powershell"
+
 :: Check if a script was provided or help requested
 if "%~1"=="" (
     goto :showHelp
@@ -63,7 +66,7 @@ goto collectArgs
 :endArgs
 
 :: Verify script exists
-set "scriptPath=%~dp0powershell\%scriptName%.ps1"
+set "scriptPath=%scriptsDir%\%scriptName%.ps1"
 if not exist "!scriptPath!" (
     echo [ERROR] Script "%scriptName%.ps1" not found at: "!scriptPath!"
     exit /b 1
