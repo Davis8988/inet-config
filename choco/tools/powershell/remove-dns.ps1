@@ -12,6 +12,7 @@ param (
 
     [string]$Interface,
     [switch]$ShowHidden,
+    [Alias("y")]
     [switch]$AutoConfirm
 )
 
