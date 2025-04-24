@@ -1,0 +1,47 @@
+# PowerShell / Chocolatey project ignore file
+
+# Ignore Chocolatey package artifacts
+*.nupkg
+*.nuspec
+_output/
+
+# temp files created by comment remover
+*.~
+
+# PowerShell-related temp/output
+*.ps1~  # backup versions
+*.psm1~
+*.psd1~
+*.ps1xml~
+*.log
+*.tmp
+
+# Chocolatey install/uninstall logs
+*.MsiInstall.log
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store
+
+# Windows
+*.bak
+*.swp
+
+
+# Packaging tools
+choco/tools/_compiled/
+choco/tools/output/
+choco/tools/bin/
